@@ -11,9 +11,14 @@ const sessionUser: RequestHandler = (req, res, next) => {
         throw err;
     }
     const token = authHeader.split(' ')[1];
+    const tokenCopy = <string>req.headers["auth"];
+    console.log(`token ${token}`)
+    console.log(`token ${tokenCopy}`)
+
     let decodedToken;
     try {
         decodedToken = jwt.verify(token, 'secret');
+        res.locals.jwtPayLoad = decodedToken;
     } catch (err) {
         err.statusCode = 500;
         throw err;
@@ -25,7 +30,7 @@ const sessionUser: RequestHandler = (req, res, next) => {
     }
 
     // req.res?.set("userId", (<AuthUser>decodedToken).userId)
-    req.res?.cookie('sessionId', decodedToken);
+    // req.res?.cookie('sessionId', decodedToken);
 
     console.log(decodedToken);
     next();

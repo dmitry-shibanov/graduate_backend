@@ -7,7 +7,7 @@ export const postAddToCart: RequestHandler = async (req, res, next) => {
     const productId = req.body.productId;
 
     try {
-        const userId = req.cookies("userId") as number;
+        const userId = res.locals.jwtPayload.userId as number;
         const user = await User.findByPk(userId);
         const basket = user?.basket;
         // basket?.addProductToBasket(productId);
@@ -19,7 +19,7 @@ export const postAddToCart: RequestHandler = async (req, res, next) => {
 }
 
 export const getCatalog: RequestHandler = async (req,res,next) => {
-    const userId = req.body.userId;
+    const userId = res.locals.jwtPayload.userId;;
     
 }
 

@@ -19,14 +19,14 @@ export const postSignUp: RequestHandler = async (req, res, next) => {
 
         const exitingUser = await User.findOne({
             where: {
-                login: login
+                email: email
             }
         });
 
         console.debug(`exitingUser ${exitingUser}`);
 
         if (exitingUser) {
-            throw new Error("Пользователь с таким login уже существует, придумаете другой");
+            throw new Error("Пользователь с таким email уже существует, придумаете другой");
         }
         const hashPassword = bcrypt.hashSync(password,12);
         const newUser = await User.create({ email: email, password: hashPassword, login: login });
@@ -88,7 +88,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
 }
 
 export const getUserCourses: RequestHandler = (req, res, next) => {
-    const userID = req.body.id;
+    const userID = res.locals.jwtPayload.userId;;
     
 
 }

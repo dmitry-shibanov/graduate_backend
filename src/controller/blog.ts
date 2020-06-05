@@ -31,7 +31,7 @@ export const postUpdateBlog: RequestHandler = async (req,res, next) => {
     const id = req.body.id;
     const tytle = req.body.description;
     const description = req.body.description;
-    const userId = req.body.userId;
+    const userId = res.locals.jwtPayload.userId;;
     const commentId = req.body.commentId;
 
     try{
