@@ -9,6 +9,8 @@ export default class User extends Model {
     email!: string;
     login!: string;
     password!: string;
+    resetToken?: string;
+    resetDate?: number;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;

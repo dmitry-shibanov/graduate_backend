@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { validationResult } from 'express-validator/check';
+import crypto from "crypto";
 import User from "../data/models/user";
 import jwt from 'jsonwebtoken';
 import CustomError from "../models/error";
@@ -40,6 +41,34 @@ export const postSignUp: RequestHandler = async (req, res, next) => {
 
 export const postChangePassword: RequestHandler = (req, res, next) => {
 
+}
+
+
+export const postForgortPassword: RequestHandler = async (req,res,next) => {
+    const email = req.body.email;
+
+    const user = await User.findOne({where:{
+        email: email
+    }});
+
+    if(!user){
+        return res.status(403).json({message: "Пользователь с данным email не существует"});
+    }
+    const token = crypto.randomBytes(20).toString("hex");
+    const date = Date.now() + 3600000;
+
+    await user.update({
+        resetToken: token,
+        resetDate: date
+    });
+
+
+    
+    return res.status(200).json("message was sent");
+}
+
+export const postResetPassword: RequestHandler = (req,res,next) => {
+    const token  = req.params.token;
 }
 
 export const postLogin: RequestHandler = async (req, res, next) => {
