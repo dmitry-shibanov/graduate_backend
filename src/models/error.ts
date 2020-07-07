@@ -1,8 +1,9 @@
 class CustomError extends Error{
     statusCode: number;
 
-    constructor(error: Error, statusCode: number = 500) {
-        super(error.message); // 'Error' breaks prototype chain here
+
+    constructor(message: string, statusCode: number = 500) {
+        super(message); // 'Error' breaks prototype chain here
         this.statusCode = statusCode;
         Object.setPrototypeOf(this, new.target.prototype); // restore prototype chain
     }

@@ -11,6 +11,7 @@ export default class User extends Model {
     password!: string;
     resetToken?: string;
     resetDate?: number;
+    verified!: boolean;
 
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
@@ -22,22 +23,9 @@ export default class User extends Model {
     public countBlogs!: HasManyCountAssociationsMixin;
     public createBlog!: HasManyCreateAssociationMixin<Blog>;
 
-    // operations for orders
-    public getOrders?: HasManyGetAssociationsMixin<Order>;
-    public countOrders?: HasManyCountAssociationsMixin;
-    public createOrder!: HasManyCreateAssociationMixin<Order>;
-    public addOrder!: HasManyAddAssociationMixin<Order, number>;
-
     public readonly blogs?: Blog[];
-
-    // Bucket
-    public readonly basket?: Basket 
-
-    public readonly orders?: Order[];
 
     public static associations: {
         blogs: Association<User, Blog>;
-        basket: Association<User, Basket>;
-        orders: Association<User, Order>;
     };
 }

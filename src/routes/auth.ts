@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { check, body, Meta } from 'express-validator/check';
-import { postSignUp, postLogin } from "../controller/auth";
+import { postSignUp, postLogin, postForgortPassword, postChangePassword, confirmRegestration } from "../controller/auth";
 import sessionUser from "../middleware/user_session"
 const router = Router();
 
@@ -30,5 +30,11 @@ router.post("/login", [check('email').isEmail(),
 body('password', "Пожайлуста введите валидный пароль").isLength({ min: 5 }).isAlphanumeric()],
     postLogin);
 
+// post change Password
+router.post('/reset', [check('email').isEmail()], postForgortPassword)
+// post reset Password
+router.post('/newpassword', [body('password', "Пожайлуста введите валидный пароль").isLength({ min: 5 }).isAlphanumeric()], postChangePassword)
+// post confirm password
+router.post('/confirm/:token', confirmRegestration);
 
 export default router;

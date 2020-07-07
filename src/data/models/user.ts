@@ -1,4 +1,4 @@
-import { Model, STRING, INTEGER, DATE } from "sequelize";
+import { Model, STRING, INTEGER, DATE, BOOLEAN } from "sequelize";
 import sequelize from "../db_connection"
 import User from "../../models/user";
 
@@ -35,8 +35,14 @@ User.init({
         primaryKey: false
     },
     resetDate: {
-        type: INTEGER,
+        type: DATE,
         allowNull: true,
+        primaryKey: false
+    },
+    verified: {
+        type: BOOLEAN,
+        allowNull: false,
+        defaultValue: false,
         primaryKey: false
     }
 }, { sequelize,

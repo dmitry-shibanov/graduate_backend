@@ -20,6 +20,10 @@ Blog.init({
     image: {
         type: TEXT,
         allowNull: true
+    },
+    creator: {
+        type: INTEGER,
+        allowNull: false,
     }
 },{sequelize});
 
