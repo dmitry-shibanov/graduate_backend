@@ -5,7 +5,6 @@ class Blog extends Model{
     title!: string;
     content!: string
     image?: string;
-    creator!: number;
     isPrivate!: boolean;
 
     public readonly createdAt!: Date;

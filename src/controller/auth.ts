@@ -7,9 +7,6 @@ import CustomError from '../models/error';
 import bcrypt from 'bcryptjs';
 import nodemailer from 'nodemailer';
 import email from "../creds/email.json";
-import Secrets from "../creds/token_secrets.json";
-
-import { userInfo } from 'os';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -47,18 +44,18 @@ export const postSignUp: RequestHandler = async (req, res, next) => {
 
     console.debug(`exitingUser ${exitingUser}`);
 
-    if (exitingUser && exitingUser.verified) {
+    if (exitingUser) {
       throw new Error('Пользователь с таким email уже существует, придумаете другой');
     }
     const hashPassword = bcrypt.hashSync(password, 12);
     const newUser = await User.create({ email: email, password: hashPassword, login: login });
     const token = generateRandomToken();
     transporter.sendMail({
-        to: email,
+        to: 'email',
         from: 'testserver',
         subject: 'Sign Up',
         html: `<h1>Регистрация</h1>
-            <p> Вы зарегестрировались на нашем сайте по обучению, пожайлуста перейдите по данной ссылке, чтобы подтвердить регистрацию <a hreg="http://localhost:3000/confirmRegestration/${token}">Link</a></p>
+            <p> Вы зарегестрировались на нашем сайте по обучению, пожайлуста перейдите по данной ссылке, чтобы подтвердить регистрацию <a hreg="http://localhost:3100/confirm/${token}">Link</a></p>
             `,
       });
 
@@ -72,50 +69,6 @@ export const postSignUp: RequestHandler = async (req, res, next) => {
 export const postChangePassword: RequestHandler = (req, res, next) => {
 
 };
-
-
-export const postForgortPassword: RequestHandler = async (req,res,next) => {
-    const email = req.body.email;
-
-    const userId = res.locals.jwtPayLoad.userId;
-try{
-    if(userId){
-        throw new CustomError("Вы уже авторизованы", 422);
-    }
-
-    const user = await User.findOne({where:{
-        email: email
-    }});
-
-    if(!user){
-        return res.status(403).json({message: "Пользователь с данным email не существует", error: true});
-    }
-    const token = generateRandomToken();
-    const date = new Date(Date.now() + 3600000);
-
-    await user.update({
-        resetToken: token,
-        resetDate: date
-    });
-
-    transporter.sendMail({
-        to: email,
-        from: 'testserver',
-        subject: 'Sign Up',
-        html: `<h1>Регистрация</h1>
-            <p> Вы зарегестрировались на нашем сайте по обучению, пожайлуста перейдите по данной ссылке, чтобы подтвердить регистрацию <a hreg="http://localhost:3100/confirm/${token}">Link</a></p>
-            `,
-      });
-      return res.status(200).json("message was sent");
-
-}catch(_err){
-
-}
-}
-
-export const postResetPassword: RequestHandler = (req,res,next) => {
-    const token  = req.params.token;
-}
 
 export const postLogin: RequestHandler = async (req, res, next) => {
   const email = req.body.email;
@@ -131,20 +84,21 @@ export const postLogin: RequestHandler = async (req, res, next) => {
       console.log(error.value);
       throw new CustomError(error.msg, 401);
     }
+    console.log('пришел на проверку');
 
     const currentUser = await User.findOne({
       where: {
-        email: email
+        email: email,
       },
     });
 
     console.log(`currentUser is ${currentUser}`);
     if (!currentUser) {
-      throw new CustomError('Пользователь не найден', 401);
+      throw new CustomError(new Error('Пользователь не найден'), 401);
     }
 
     if (!bcrypt.compare(password, currentUser?.password)) {
-      throw new CustomError('Пароли не совпадают', 401);
+      throw new CustomError(new Error('Пароли не совпадают'));
     }
 
     const token = jwt.sign(
@@ -152,7 +106,7 @@ export const postLogin: RequestHandler = async (req, res, next) => {
         email: currentUser!.login,
         userId: currentUser!.id,
       },
-      Secrets.user,
+      'secret',
       { expiresIn: '10h' },
     );
 
@@ -163,22 +117,6 @@ export const postLogin: RequestHandler = async (req, res, next) => {
   }
 };
 
-export const confirmRegestration: RequestHandler = async (req, res, next) => {
-    const token = req.params.token;
-    const user = await User.findOne({where:{
-        verified: false,
-        resetToken: token,
-    }});
-
-    if(!user){
-        return res.status(401).json({message: "Пользователь не найден или уже прошел верификацию", error: true});
-    }
-
-    await user.update({
-        verified: true,
-        resetDate: null,
-        resetToken: null
-    })
-
-    return res.status(201).json({message: "Поздравляю вы зарегестрированы", error: false});
-}
+export const getUserCourses: RequestHandler = (req, res, next) => {
+  const userID = res.locals.jwtPayload.userId;
+};
